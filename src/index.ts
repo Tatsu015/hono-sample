@@ -1,16 +1,35 @@
 import { Hono } from 'hono'
 
 const app = new Hono()
-app.get('/', (c) => c.text("hello 🔥"))
 
-app.get('/user/:name', (c) => {
-    const name = c.req.param('name')
-    return c.json({ name: name })
+type User = { id: number, name: string }
+
+let table: User[] = [
+    { id: 1, name: 'Aaa' }
+]
+
+app.get('/', (c) => c.json("hello 🔥"))
+
+app.get('/user/:id', (c) => {
+    const id = Number(c.req.param('id'))
+    if (!id) {
+        return c.json('no user')
+    }
+    const user = table.find((t) => t.id === id)
+    if (!user) {
+        return c.json('no user')
+    }
+    return c.json(user)
 })
 
-app.get('/animal/:type?', (c) => {
-    const id = c.req.param('type');
-    return c.text('Animal: ' + String(id))
+app.post('/user', async (c) => {
+    const param = await c.req.json<{ name: string }>
+    const user: User = {
+        id: table.length + 1,
+        name: param.name,
+    };
+    table.push(user)
+    c.json('success')
 })
 
 export default app;

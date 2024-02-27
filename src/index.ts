@@ -8,7 +8,7 @@ let table: User[] = [
     { id: 1, name: 'Aaa' }
 ]
 
-app.get('/', (c) => c.json("hello 🔥"))
+app.get('/', (c) => c.json(table))
 
 app.get('/user/:id', (c) => {
     const id = Number(c.req.param('id'))
@@ -24,12 +24,13 @@ app.get('/user/:id', (c) => {
 
 app.post('/user', async (c) => {
     const param = await c.req.json<{ name: string }>
+    console.log(param)
     const user: User = {
         id: table.length + 1,
         name: param.name,
     };
     table.push(user)
-    c.json('success')
+    return c.json('success')
 })
 
 export default app;
